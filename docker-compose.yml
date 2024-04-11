@@ -1,6 +1,21 @@
 version: '3.8'
 
 services:
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - html:/usr/share/nginx/html
+      - certs:/etc/nginx/certs
+      - vhostd:/etc/nginx/vhost.d
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - confd:/etc/nginx/conf.d
+    labels:
+      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+
   vote:
     container_name: vote
     build: ./vote
@@ -8,7 +23,8 @@ services:
       - 8080:80
     depends_on:
       - redis
-
+    environment:
+      - VIRTUAL_HOST=vote.127.0.0.1.nip.io
 
   result:
     container_name: result
@@ -17,6 +33,8 @@ services:
       - 8081:80
     depends_on:
       - db
+    environment:
+      - VIRTUAL_HOST=result.127.0.0.1.nip.io
 
   worker:
     container_name: worker
@@ -55,3 +73,7 @@ services:
 volumes:
   db-data:
   redis-data:
+  html:
+  certs:
+  vhostd:
+  confd:
