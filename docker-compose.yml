@@ -3,7 +3,7 @@ version: '3.8'
 services:
   vote:
     container_name: vote
-    image: roxsross12/voting-app:vote-1.0.0
+    build: ./vote
     ports:
       - 8080:80
     depends_on:
@@ -12,7 +12,7 @@ services:
 
   result:
     container_name: result
-    image: roxsross12/voting-app:result-1.0.0
+    build: ./result
     ports:
       - 8081:80
     depends_on:
@@ -20,7 +20,7 @@ services:
 
   worker:
     container_name: worker
-    image: roxsross12/voting-app:worker-1.0.0
+    build: ./worker
     depends_on:
       - redis
       - db
