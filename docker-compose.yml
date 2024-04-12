@@ -15,26 +15,34 @@ services:
       - confd:/etc/nginx/conf.d
     labels:
       com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+    networks:
+      - front-tier
+      - back-tier
+
 
   vote:
     container_name: vote
     build: ./vote
-    ports:
-      - 8080:80
     depends_on:
       - redis
     environment:
       - VIRTUAL_HOST=vote.127.0.0.1.nip.io
+    networks:
+      - front-tier
+      - back-tier
 
   result:
     container_name: result
     build: ./result
-    ports:
-      - 8081:80
     depends_on:
       - db
+    ports:
+      - "8081:4000"
     environment:
       - VIRTUAL_HOST=result.127.0.0.1.nip.io
+    networks:
+      - front-tier
+      - back-tier
 
   worker:
     container_name: worker
@@ -42,12 +50,16 @@ services:
     depends_on:
       - redis
       - db
+    networks:
+      - back-tier
 
   redis:
     container_name: redis
     image: redis:alpine
     volumes:
       - redis-data:/data
+    networks:
+      - back-tier
 
   db:
     container_name: db
@@ -58,6 +70,8 @@ services:
       POSTGRES_DB: postgres
     volumes:
       - db-data:/var/lib/postgresql/data
+    networks:
+      - back-tier
 
   pgadmin:
     container_name: pgadmin
@@ -77,3 +91,7 @@ volumes:
   certs:
   vhostd:
   confd:
+
+networks:
+  front-tier:
+  back-tier:
