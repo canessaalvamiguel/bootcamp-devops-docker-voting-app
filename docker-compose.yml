@@ -19,7 +19,6 @@ services:
       - front-tier
       - back-tier
 
-
   vote:
     container_name: vote
     build: ./vote
@@ -36,8 +35,6 @@ services:
     build: ./result
     depends_on:
       - db
-    ports:
-      - "8081:4000"
     environment:
       - VIRTUAL_HOST=result.127.0.0.1.nip.io
     networks:
